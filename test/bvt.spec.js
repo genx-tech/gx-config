@@ -1,16 +1,12 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
 
-const should = require('should');
-const assert = require('assert');
 const path = require('path');
-const ConfigLoader = require('../lib/ConfigLoader.js');
-const JsonConfigProvider = require('../lib/JsonConfigProvider.js');
-const JsConfigProvider = require('../lib/JsConfigProvider.js');
-const EnvAwareConfigProviderF = require('../lib/EnvAwareConfigProviderF.js');
+const ConfigLoader = require('../src/ConfigLoader.js');
+const JsonConfigProvider = require('../src/JsonConfigProvider.js');
+const JsConfigProvider = require('../src/JsConfigProvider.js');
+const EnvAwareConfigProviderF = require('../src/EnvAwareConfigProviderF.js');
 const EnvAwareJsonConfigProvider = EnvAwareConfigProviderF('.json', JsonConfigProvider, 'default'); 
 const EnvAwareJsConfigProvider = EnvAwareConfigProviderF('.js', JsConfigProvider, 'default'); 
 
@@ -91,7 +87,7 @@ describe('bvt', function () {
                 let value = config.provider.getItem('key9.key10')
                 value.should.equal("newly added");
                 
-                delete config.providnpmer._envConfigProvider.config.key9;
+                delete config.provider._envConfigProvider.config.key9;
                 value = config.provider._envConfigProvider.getItem('key9.key10');
                 should.not.exist(value);
 

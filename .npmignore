@@ -2,6 +2,10 @@ doc
 coverage
 test
 .gitignore
+.prettierignore
+.mocharc.js
 .travis.yml
 jsdoc.json
 .nyc_output
+babel.config.js
+src

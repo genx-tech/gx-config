@@ -1,0 +1,11 @@
+/node_modules
+/lib
+/test
+/patches
+/docs
+/doc
+/**/__test__
+/coverage
+/.nyc_output
+/allure-results
+/public
