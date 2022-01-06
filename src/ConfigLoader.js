@@ -97,7 +97,7 @@ class ConfigLoader {
     async load_(variables) {
         let oldData = this.data;
 
-        await this.reload_({ ...variables, $this: oldData });
+        await this.reload_(variables);
 
         if (oldData) {
             this.data = _.defaults(this.data, oldData);
@@ -123,6 +123,8 @@ class ConfigLoader {
      */
     postProcess(variables) {
         let queue = [this.data];
+
+        variables = { ...variables, $this: this.data };
 
         let interpolateElement = (coll, key, val) => {
             if (typeof val === 'string') {
