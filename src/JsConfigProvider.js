@@ -1,6 +1,6 @@
 'use strict';
 
-const { fs, load_ } = require('@genx/sys');
+const { fs } = require('@genx/sys');
 
 const JsonConfigProvider = require('./JsonConfigProvider.js');
 
@@ -16,7 +16,7 @@ class JsConfigProvider extends JsonConfigProvider {
      */
     async load_(logger) {
         if (await fs.pathExists(this.filePath)) {
-            this.config = await load_(this.filePath); // load js into sandbox
+            this.config = require(this.filePath); // load js into sandbox
             if (logger) {
                 logger.log(
                     'info',

@@ -1,6 +1,6 @@
 {
     "name": "@genx/config",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "An environment-aware config system.",
     "main": "lib/index.js",
     "publishConfig": {
@@ -12,9 +12,8 @@
         "lint:fix": "eslint --fix \"src/**/*.js\"",
         "doc": "jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template -R README.md -d './doc' -r --verbose ./src",
         "jison": "jison ./src/lang/grammar/oolong.jison -o ./src/lang/grammar/oolong.js && npm run build",
-        "test:unit": "mocha --recursive src/**/*.spec.js",
-        "test": "npm run clean && mocha --reporter mocha-multi --reporter-options mocha-multi=test/mocha-multi-reporters.json test/*.spec.js",
-        "cover": "nyc --reporter=html --reporter=text mocha test/*.mocha.js --recursive src/**/*.spec.js",
+        "test": "npm run clean && mocha test/*.spec.js",
+        "cover": "nyc --reporter=html --reporter=text mocha --recursive test/*.spec.js",
         "clean": "del-cli lib .nyc_output coverage allure-results",
         "build": "npm run clean && NODE_ENV=production babel src -d lib --ignore \"**/__test__/*.js\" --source-maps --copy-files --no-copy-ignored"
     },
@@ -68,8 +67,8 @@
         "source-map-support": "^0.5.19"
     },
     "dependencies": {
-        "@genx/july": "*",
-        "@genx/sys": "*"
+        "@genx/july": "^1.1.1",
+        "@genx/sys": "^0.1.7"
     },
     "prettier": {
         "quoteProps": "consistent",

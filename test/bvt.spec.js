@@ -98,7 +98,9 @@ describe('bvt', function () {
         it('rewrite js', function (done) {
             let config = new ConfigLoader(new EnvAwareJsConfigProvider(cfgDir, 'test'));
 
-            config.load_().then(cfg => {                
+            config.load_().then(cfg => {       
+                cfg['key1']['key1_2'].should.be.exactly('value1_2');
+                
                 cfg['key1_3'].should.equal("reloaded for dev");
                 config.provider.setItem('key1_3', 'modified');                
 
