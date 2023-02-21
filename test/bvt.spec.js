@@ -3,10 +3,10 @@
  */
 
 const path = require('path');
-const ConfigLoader = require('../src/ConfigLoader.js');
-const JsonConfigProvider = require('../src/JsonConfigProvider.js');
-const JsConfigProvider = require('../src/JsConfigProvider.js');
-const EnvAwareConfigProviderF = require('../src/EnvAwareConfigProviderF.js');
+const ConfigLoader = require('../lib/ConfigLoader.js');
+const JsonConfigProvider = require('../lib/JsonConfigProvider.js');
+const JsConfigProvider = require('../lib/JsConfigProvider.js');
+const EnvAwareConfigProviderF = require('../lib/EnvAwareConfigProviderF.js');
 const EnvAwareJsonConfigProvider = EnvAwareConfigProviderF('.json', JsonConfigProvider, 'default'); 
 const EnvAwareJsConfigProvider = EnvAwareConfigProviderF('.js', JsConfigProvider, 'default'); 
 
@@ -56,6 +56,8 @@ describe('bvt', function () {
 
             config.load_({ name: 'Bob', place: 'Sydney', value1: 10, value2: 20 }).then(cfg => {
 
+                console.log(cfg);
+
                 cfg.should.have.keys('key', 'key2');
                 cfg['key'].should.be.exactly('Hello Bob, welcome to Sydney!');
                 cfg['key2'].should.have.keys('array', 'object');
@@ -66,6 +68,7 @@ describe('bvt', function () {
                 cfg['key2']['object']['non'].should.equal('nothing');                
                 cfg['key2']['jsv1'].should.be.exactly(200);
                 cfg['key2']['jsv2'].should.equal('Bob Sydney');
+                cfg['key2']['jsv3'].should.equal('Bob - Sydney');
 
                 done();
 

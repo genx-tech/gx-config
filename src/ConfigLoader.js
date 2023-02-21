@@ -1,25 +1,13 @@
-'use strict';
+import { _ } from '@genx/july';
 
-const vm = require('vm');
-const { _, quote } = require('@genx/july');
+import JsonConfigProvider from './JsonConfigProvider.js';
+import EnvAwareConfigProviderF from './EnvAwareConfigProviderF.js';
 
-const JsonConfigProvider = require('./JsonConfigProvider.js');
-const EnvAwareConfigProviderF = require('./EnvAwareConfigProviderF.js');
+import defaultSyntax from './defaultSyntax';
+
 const EnvAwareJsonConfigProvider = EnvAwareConfigProviderF(
     '.json',
     JsonConfigProvider
-);
-
-const JS_VALUE_TOKEN = 'jsv';
-const JS_TEMPLATE_TOKEN = 'jst';
-const PROCESSOR_PREFIX = '#!';
-
-const PrefixMap = new Map();
-PrefixMap.set(JS_VALUE_TOKEN, (strVal, variables) =>
-    vm.runInNewContext('() => (' + strVal + ')', variables)()
-);
-PrefixMap.set(JS_TEMPLATE_TOKEN, (strVal, variables) =>
-    vm.runInNewContext(quote(strVal, '`'), variables)
 );
 
 class ConfigLoader {
@@ -28,11 +16,20 @@ class ConfigLoader {
      * @param {string} configDir
      * @param {string} baseName
      * @param {string} envFlag
+     * @param {Logger} logger
+     * @param {object} postProcessors
      */
-    static createEnvAwareJsonLoader(configDir, baseName, envFlag, logger) {
+    static createEnvAwareJsonLoader(
+        configDir,
+        baseName,
+        envFlag,
+        logger,
+        postProcessors
+    ) {
         return new ConfigLoader(
             new EnvAwareJsonConfigProvider(configDir, baseName, envFlag),
-            logger
+            logger,
+            postProcessors
         );
     }
 
@@ -59,7 +56,7 @@ class ConfigLoader {
      *   // and finally override the default.
      *   let cfg = await envAwareLoader.load_();
      */
-    constructor(configProvider, logger) {
+    constructor(configProvider, logger, postProcessors) {
         /**
          * The config data source provider
          * @type {object}
@@ -87,6 +84,15 @@ class ConfigLoader {
          * @public
          */
         this.logger = logger;
+
+        /**
+         * Post processors
+         * @private
+         */
+        this.postProcessors =
+            postProcessors != null
+                ? _.defaultsDeep(postProcessors, defaultSyntax)
+                : defaultSyntax;
     }
 
     /**
@@ -95,7 +101,7 @@ class ConfigLoader {
      * @returns {Promise.<object>}
      */
     async load_(variables) {
-        let oldData = this.data;
+        const oldData = this.data;
 
         await this.reload_(variables);
 
@@ -122,11 +128,13 @@ class ConfigLoader {
      * @param {object} variables - variables
      */
     postProcess(variables) {
-        let queue = [this.data];
+        const queue = [this.data];
+
+        this._l = this.postProcessors.prefix.length;
 
         variables = { ...variables, $this: this.data };
 
-        let interpolateElement = (coll, key, val) => {
+        const interpolateElement = (coll, key, val) => {
             if (typeof val === 'string') {
                 coll[key] = this._tryProcessStringValue(val, variables);
             } else if (_.isPlainObject(val) || _.isArray(val)) {
@@ -137,16 +145,14 @@ class ConfigLoader {
         let offset = 0;
 
         while (queue.length > offset) {
-            let node = queue[offset];
+            const node = queue[offset];
 
             if (_.isPlainObject(node)) {
-                for (let key in node) {
-                    if (node.hasOwnProperty(key)) {
-                        interpolateElement(node, key, node[key]);
-                    }
-                }
+                _.forOwn(node, (value, key) => {
+                    interpolateElement(node, key, value);
+                });
             } else {
-                let l = node.length;
+                const l = node.length;
                 for (let i = 0; i < l; i++) {
                     interpolateElement(node, i, node[i]);
                 }
@@ -157,23 +163,23 @@ class ConfigLoader {
     }
 
     _tryProcessStringValue(strVal, variables) {
-        if (strVal.startsWith(PROCESSOR_PREFIX)) {
-            let colon = strVal.indexOf(':');
-            if (colon > 2) {
-                let token = strVal.substring(2, colon);
-                let operator = PrefixMap.get(token);
+        if (strVal.startsWith(this.postProcessors.prefix)) {
+            const colonPos = strVal.indexOf(':');
+            if (colonPos > this._l) {
+                const token = strVal.substring(this._l, colonPos);
+                const operator = this.postProcessors.processors[token];
                 if (operator) {
-                    return operator(strVal.substr(colon + 1), variables);
+                    return operator(strVal.substr(colonPos + 1), variables);
                 }
 
-                throw new Error('Unsupported interpolation method: ' + token);
+                throw new Error('Unsupported post processor: ' + token);
             }
 
-            throw new Error('Invalid interpolation syntax: ' + strVal);
+            throw new Error('Invalid post processor syntax: ' + strVal);
         }
 
         return strVal;
     }
 }
 
-module.exports = ConfigLoader;
+export default ConfigLoader;

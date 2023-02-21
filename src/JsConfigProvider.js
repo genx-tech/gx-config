@@ -1,8 +1,6 @@
-'use strict';
+import { fs } from '@genx/sys';
 
-const { fs } = require('@genx/sys');
-
-const JsonConfigProvider = require('./JsonConfigProvider.js');
+import JsonConfigProvider from './JsonConfigProvider.js';
 
 /**
  * JavaScirpt module file config data source
@@ -42,4 +40,4 @@ class JsConfigProvider extends JsonConfigProvider {
     }
 }
 
-module.exports = JsConfigProvider;
+export default JsConfigProvider;

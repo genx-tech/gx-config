@@ -1,7 +1,5 @@
-'use strict';
-
-const { _ } = require('@genx/july');
-const { fs } = require('@genx/sys');
+import { _ } from '@genx/july';
+import { fs } from '@genx/sys';
 
 class JsonConfigProvider {
     /**
@@ -70,4 +68,4 @@ class JsonConfigProvider {
     }
 }
 
-module.exports = JsonConfigProvider;
+export default JsonConfigProvider;

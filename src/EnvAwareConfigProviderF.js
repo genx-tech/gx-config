@@ -1,7 +1,5 @@
-'use strict';
-
-const path = require('path');
-const { _ } = require('@genx/july');
+import path from 'node:path';
+import { _ } from '@genx/july';
 
 /**
  * Environment-aware config provider factory
@@ -53,8 +51,8 @@ const EnvAwareConfigProviderF = (EXT, PROVIDER, DEFAULT_FLAG = 'default') =>
          * @returns {Promise.<object>}
          */
         async load_(logger) {
-            let defConfig = await this._defConfigProvider.load_(logger);
-            let envConfig = await this._envConfigProvider.load_(logger);
+            const defConfig = await this._defConfigProvider.load_(logger);
+            const envConfig = await this._envConfigProvider.load_(logger);
 
             this.config = _.defaults({}, envConfig, defConfig);
             if (logger && !_.isEmpty(envConfig)) {
@@ -101,4 +99,4 @@ const EnvAwareConfigProviderF = (EXT, PROVIDER, DEFAULT_FLAG = 'default') =>
         }
     };
 
-module.exports = EnvAwareConfigProviderF;
+export default EnvAwareConfigProviderF;

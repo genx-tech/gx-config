@@ -1,8 +1,9 @@
 {
     "name": "@genx/config",
-    "version": "1.0.5",
+    "version": "1.1.0",
     "description": "An environment-aware config system.",
     "main": "lib/index.js",
+    "module": "src/index.js",
     "publishConfig": {
         "access": "public"
     },
@@ -11,11 +12,10 @@
         "lint": "eslint \"src/**/*.js\"",
         "lint:fix": "eslint --fix \"src/**/*.js\"",
         "doc": "jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template -R README.md -d './doc' -r --verbose ./src",
-        "jison": "jison ./src/lang/grammar/oolong.jison -o ./src/lang/grammar/oolong.js && npm run build",
-        "test": "npm run clean && mocha test/*.spec.js",
-        "cover": "nyc --reporter=html --reporter=text mocha --recursive test/*.spec.js",
-        "clean": "del-cli lib .nyc_output coverage allure-results",
-        "build": "npm run clean && NODE_ENV=production babel src -d lib --ignore \"**/__test__/*.js\" --source-maps --copy-files --no-copy-ignored"
+        "test": "pnpm clean && pnpm build && mocha test/*.spec.js",
+        "cover": "nyc --reporter=html --reporter=text mocha test/*.spec.js",
+        "clean": "shx rm -rf lib .nyc_output coverage allure-results",
+        "build": "pnpm clean && NODE_ENV=production babel src -d lib --ignore \"**/__test__/*.js\" --source-maps --copy-files --no-copy-ignored"
     },
     "repository": {
         "type": "git",
@@ -30,7 +30,7 @@
         "exclude": [
             "babel.config.js",
             "test",
-            "lib",
+            ".mocharc.js",
             "**/*.spec.js"
         ]
     },
@@ -39,17 +39,15 @@
     },
     "homepage": "https://github.com/genx-tech/gx-config#readme",
     "devDependencies": {
-        "@babel/cli": "^7.14.8",
-        "@babel/core": "^7.15.0",
-        "@babel/eslint-parser": "^7.16.5",
-        "@babel/plugin-proposal-class-properties": "^7.14.5",
-        "@babel/plugin-proposal-decorators": "^7.14.5",
-        "@babel/preset-env": "^7.15.0",
-        "@babel/register": "^7.15.3",
-        "@genx/babelnode": "^7.14.9",
+        "@babel/cli": "^7.21.0",
+        "@babel/core": "^7.21.0",
+        "@babel/eslint-parser": "^7.19.1",
+        "@babel/plugin-proposal-class-properties": "^7.18.6",
+        "@babel/plugin-proposal-decorators": "^7.21.0",
+        "@babel/preset-env": "^7.20.2",
         "allure-mocha": "^2.0.0-beta.14",
+        "babel-plugin-add-module-exports": "^1.0.4",
         "babel-plugin-source-map-support": "^2.1.3",
-        "del-cli": "^4.0.1",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-config-standard": "^16.0.3",
@@ -64,7 +62,9 @@
         "nyc": "^15.1.0",
         "prettier": "^2.3.2",
         "should": "^13.2.3",
-        "source-map-support": "^0.5.19"
+        "shx": "0.3.4",
+        "source-map-support": "^0.5.19",
+        "typescript": "^4.9.5"
     },
     "dependencies": {
         "@genx/july": "^1.1.1",
