@@ -3,7 +3,7 @@
  */
 
 const path = require('path');
-const ConfigLoader = require('../lib/ConfigLoader.js');
+const ConfigLoader = require('../lib');
 const JsonConfigProvider = require('../lib/JsonConfigProvider.js');
 const JsConfigProvider = require('../lib/JsConfigProvider.js');
 const EnvAwareConfigProviderF = require('../lib/EnvAwareConfigProviderF.js');

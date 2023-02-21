@@ -9,4 +9,3 @@ jsdoc.json
 .nyc_output
 babel.config.js
 allure-results
-src
